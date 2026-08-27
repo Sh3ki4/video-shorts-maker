@@ -1,0 +1,24 @@
+Video Shorts Maker — сведения о сторонних компонентах
+
+FFmpeg shared build (ветка n8.1), BtbN/FFmpeg-Builds
+https://github.com/BtbN/FFmpeg-Builds
+FFmpeg source: https://github.com/FFmpeg/FFmpeg/tree/n8.1
+Включённая сборка содержит GPL-компоненты (включая libx264) и распространяется по GPL v3+.
+Текст лицензии: https://www.gnu.org/licenses/gpl-3.0.txt
+
+PySide6 / Qt for Python — LGPL v3 / GPL v3 / коммерческая лицензия
+https://doc.qt.io/qtforpython-6/licenses.html
+
+faster-whisper — MIT License
+https://github.com/SYSTRAN/faster-whisper
+
+CTranslate2 — MIT License
+https://github.com/OpenNMT/CTranslate2
+
+Groq Python SDK — Apache License 2.0
+https://github.com/groq/groq-python
+
+PyInstaller — GPL v2+ с исключением для bootloader
+https://pyinstaller.org/en/stable/license.html
+
+Полные сведения о версиях Python-пакетов находятся во внутренней папке приложения.
