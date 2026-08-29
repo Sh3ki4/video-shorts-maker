@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QPushButton, QScrollArea, QSpinBox, QTabWidget, QTextEdit, QVBoxLayout, QWidget,
 )
 
+from . import __version__
 from .ffmpeg_tools import find_ffmpeg
 from .processor import BatchProcessor
 from .settings import Settings, load_settings, save_settings
@@ -57,7 +58,7 @@ class VideoShortsWindow(QMainWindow):
         self.worker: ProcessingThread | None = None
         self.cancel_event = threading.Event()
         self.w: dict[str, object] = {}
-        self.setWindowTitle("Video Shorts Maker")
+        self.setWindowTitle(f"Video Shorts Maker {__version__}")
         self.resize(1020, 820)
         self.setMinimumSize(880, 700)
         self._build()
@@ -69,7 +70,7 @@ class VideoShortsWindow(QMainWindow):
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
         layout.setContentsMargins(16, 14, 16, 14)
-        title = QLabel("Video Shorts Maker")
+        title = QLabel(f"Video Shorts Maker {__version__}")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
         layout.addWidget(title)
         hint = QLabel("Нарезка длинных видео, заголовок из имени файла, TikTok-субтитры и рекламная вставка.")

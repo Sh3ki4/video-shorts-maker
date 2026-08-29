@@ -184,7 +184,9 @@ class FFmpeg:
             self.log("NVENC не найден в этой сборке FFmpeg — используется процессор.")
         try:
             self._run(builder(use_nvenc), label)
-        except FFmpegError:
+        except FFmpegError as exc:
+            if self.cancel_check() or str(exc).strip() == "Обработка отменена пользователем.":
+                raise
             if not use_nvenc:
                 raise
             self.log("NVENC не запустился (возможна проблема драйвера). Повторяю через CPU…")

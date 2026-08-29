@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from shorts_maker.ffmpeg_tools import (
     FFmpeg,
+    FFmpegError,
     MediaInfo,
     output_fps,
     output_geometry,
@@ -105,7 +106,7 @@ class UtilityTests(unittest.TestCase):
 
     def test_groq_moment_is_snapped_to_word_boundary(self):
         response = SimpleNamespace(
-            choices=[SimpleNamespace(message=SimpleNamespace(content='{"time": 20.45, "reason": "интрига"}'))]
+            choices=[SimpleNamespace(message=SimpleNamespace(content="CHOICE=2 REASON=интрига"))]
         )
         client = SimpleNamespace(
             chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **_kwargs: response))
@@ -148,7 +149,36 @@ class UtilityTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertNotIn("response_format", calls[0])
         self.assertAlmostEqual(point, 20.4)
-        self.assertTrue(any("только число" in message for message in logs))
+        self.assertTrue(any("только номер" in message for message in logs))
+
+    def test_local_fallback_prefers_point_before_reveal(self):
+        values = [
+            (20.0, 20.3, "пришло"), (20.4, 20.7, "время"),
+            (20.8, 21.2, "рассказать"), (21.3, 21.5, "кто"),
+            (21.6, 21.8, "был"), (21.9, 22.2, "тайным"),
+            (22.3, 22.6, "гостем"), (22.7, 22.9, "это"),
+            (23.0, 23.2, "был…"), (23.6, 23.9, "Иван"),
+        ]
+        words = [Word(*value) for value in values]
+        logs = []
+        settings = Settings(smart_insert=True, groq_api_key="")
+        point = choose_interesting_moment(words, settings, 60, 4, logs.append)
+        self.assertAlmostEqual(point, 23.2)
+        self.assertTrue(any("Локальный анализ выбрал" in message for message in logs))
+
+    def test_cancellation_does_not_trigger_cpu_retry(self):
+        logs = []
+        ffmpeg = FFmpeg(
+            Path("ffmpeg.exe"), Path("ffprobe.exe"),
+            log=logs.append, cancel_check=lambda: True,
+        )
+        with patch.object(ffmpeg, "supports_nvenc", return_value=True), patch.object(
+            ffmpeg, "_run", side_effect=FFmpegError("Обработка отменена пользователем.")
+        ) as run:
+            with self.assertRaises(FFmpegError):
+                ffmpeg.run_encode(lambda nvenc: [str(nvenc)], True, "Монтаж")
+        self.assertEqual(run.call_count, 1)
+        self.assertFalse(any("NVENC не запустился" in message for message in logs))
 
 
 if __name__ == "__main__":

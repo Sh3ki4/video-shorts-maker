@@ -11,7 +11,7 @@ if not exist ".venv-build\Scripts\python.exe" (
 if not exist ".venv-build\Scripts\python.exe" goto :error
 ".venv-build\Scripts\python.exe" -m pip install --upgrade pip pyinstaller -r requirements.txt -r requirements-whisper.txt -r requirements-groq.txt
 if errorlevel 1 goto :error
-".venv-build\Scripts\pyinstaller.exe" --noconfirm --clean --onedir --windowed --name VideoShortsMaker --collect-all faster_whisper --collect-all ctranslate2 --collect-all tokenizers --collect-all huggingface_hub --collect-all groq --collect-all av --collect-all onnxruntime app.py
+".venv-build\Scripts\pyinstaller.exe" --noconfirm --clean --onedir --windowed --name VideoShortsMaker --collect-all faster_whisper --collect-all ctranslate2 --collect-all tokenizers --collect-all huggingface_hub --collect-all groq --collect-all av app.py
 if errorlevel 1 goto :error
 copy /y "Установить_FFmpeg.bat" "dist\VideoShortsMaker\" >nul
 copy /y "scripts_install_ffmpeg.ps1" "dist\VideoShortsMaker\" >nul
